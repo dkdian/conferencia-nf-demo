@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+saida/
+backup/
+_planilha_temp.xlsx
+~$*
+Inserção.xlsx
+video/material/
+video/imagens/
+video/_*
+video/*.mp4
+drive_ficticio/
+recebidos/

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP Fictício · Financeiro</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<header class="topo">
+  <div class="marca"><span class="logo">E</span> ERP Fictício</div>
+  <nav aria-label="Navegação"><span>Financeiro</span><span class="sep">›</span><strong>Transações</strong></nav>
+  <span class="aviso">Ambiente de demonstração · dados fictícios</span>
+</header>
+
+<main>
+  <section class="filtros" aria-label="Filtros">
+    <label class="campo">Número do documento
+      <input id="filtro-doc" type="search" placeholder="Número do documento" autocomplete="off">
+    </label>
+    <label class="campo">Período
+      <select id="filtro-periodo">
+        <option value="mes">Este mês</option>
+        <option value="passado">Mês passado</option>
+        <option value="todo">Todo o período</option>
+      </select>
+    </label>
+    <label class="campo">Itens por página
+      <select id="itens-pagina">
+        <option>10</option><option>20</option><option>50</option><option>100</option>
+      </select>
+    </label>
+  </section>
+
+  <div class="tabela-caixa">
+    <table>
+      <thead><tr>
+        <th>ID</th><th>Documento</th><th>Fornecedor</th><th>Descrição</th>
+        <th class="num">Valor</th><th>Vencimento</th><th>Situação</th><th>Pagamento</th><th>Ações</th>
+      </tr></thead>
+      <tbody id="linhas"></tbody>
+    </table>
+  </div>
+
+  <footer class="paginacao">
+    <span id="resumo">Carregando…</span>
+    <div class="botoes">
+      <button id="anterior" aria-label="Página anterior">‹</button>
+      <span id="pagina">Página 1</span>
+      <button id="proxima" aria-label="Próxima página">›</button>
+    </div>
+  </footer>
+</main>
+
+<div id="fundo" class="fundo" hidden>
+  <aside class="gaveta" role="dialog" aria-modal="true" aria-labelledby="titulo-gaveta">
+    <h2 id="titulo-gaveta">Confirmar Pagamento</h2>
+    <div class="resumo-lanc" id="resumo-lanc"></div>
+
+    <label for="v-pagamento">Valor do Pagamento</label>
+    <div class="dinheiro"><span>R$</span><input id="v-pagamento" inputmode="decimal" autocomplete="off"></div>
+    <small id="saldo-atual"></small>
+    <small id="saldo-apos"></small>
+
+    <div class="duas">
+      <div><label for="v-desconto">Desconto</label>
+        <div class="dinheiro"><span>R$</span><input id="v-desconto" inputmode="decimal" value="0,00"></div></div>
+      <div><label for="v-juros">Juros</label>
+        <div class="dinheiro"><span>R$</span><input id="v-juros" inputmode="decimal" value="0,00"></div></div>
+      <div><label for="v-multa">Multa</label>
+        <div class="dinheiro"><span>R$</span><input id="v-multa" inputmode="decimal" value="0,00"></div></div>
+      <div><label for="v-tarifa">Tarifa</label>
+        <div class="dinheiro"><span>R$</span><input id="v-tarifa" inputmode="decimal" value="0,00"></div></div>
+    </div>
+    <label for="v-outras">Outras taxas</label>
+    <div class="dinheiro meio"><span>R$</span><input id="v-outras" inputmode="decimal" value="0,00"></div>
+
+    <label for="v-liquido">Valor líquido do pagamento</label>
+    <div class="dinheiro lido"><span>R$</span><input id="v-liquido" readonly></div>
+    <small id="liquido-nota"></small>
+
+    <label for="v-data">Data de Pagamento</label>
+    <input id="v-data" type="date">
+    <small id="periodo-aviso" class="erro" hidden>Período contábil fechado para esta data.</small>
+
+    <label id="rot-conta">Conta Bancária</label>
+    <button type="button" id="cb-conta" class="combo" role="combobox" aria-haspopup="listbox" aria-expanded="false">Selecione</button>
+    <label id="rot-forma">Forma de Pagamento</label>
+    <button type="button" id="cb-forma" class="combo" role="combobox" aria-haspopup="listbox" aria-expanded="false">Selecione</button>
+
+    <div class="rodape-gaveta">
+      <button type="button" id="cancelar" class="sec">Cancelar</button>
+      <button type="button" id="confirmar" class="pri" disabled>Confirmar</button>
+    </div>
+  </aside>
+</div>
+<div id="aviso-topo" class="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

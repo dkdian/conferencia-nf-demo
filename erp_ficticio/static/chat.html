@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chat da equipe · demonstração</title>
+<style>
+  :root { --bg: #f3f5f8; --card: #fff; --ink: #1c2430; --suave: #6b7686; --linha: #dde2ea; --marca: #3b4fa8; --verde: #1a7f4b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 "Segoe UI", system-ui, sans-serif; color: var(--ink); background: var(--bg); height: 100vh; display: flex; }
+  [hidden] { display: none !important; }
+  aside { width: 200px; background: #262b45; color: #d6dbf2; padding: 16px 12px; flex: none; }
+  aside h1 { margin: 0 0 18px; font-size: 15px; color: #fff; display: flex; align-items: center; gap: 8px; }
+  aside h1 i { width: 24px; height: 24px; border-radius: 7px; background: var(--marca); display: inline-grid; place-items: center; font-style: normal; font-size: 12px; font-weight: 700; }
+  aside small { display: block; margin: 12px 8px 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #8f97c4; }
+  aside div { padding: 6px 10px; border-radius: 6px; }
+  aside div.ativo { background: rgba(255, 255, 255, .14); color: #fff; font-weight: 600; }
+  main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  header { padding: 14px 22px; background: var(--card); border-bottom: 1px solid var(--linha); }
+  header strong { font-size: 16px; }
+  header span { color: var(--suave); margin-left: 10px; font-size: 13px; }
+  #conversa { flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+  .vazio { margin: auto; color: var(--suave); }
+  .msg { display: flex; gap: 12px; max-width: 760px; }
+  .avatar { width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center; font-weight: 700; color: #fff; background: #5a6b8c; }
+  .avatar.robo { background: #1f7a5a; }
+  .avatar.gestor { background: #a8552b; }
+  .meta { font-size: 12.5px; color: var(--suave); margin-bottom: 3px; }
+  .meta b { color: var(--ink); margin-right: 8px; }
+  .balao { background: var(--card); border: 1px solid var(--linha); border-radius: 10px; padding: 10px 14px; }
+  .cartao { background: var(--card); border: 1px solid var(--linha); border-left: 4px solid var(--verde); border-radius: 10px; padding: 14px 16px; min-width: 420px; }
+  .cartao h3 { margin: 0 0 10px; font-size: 15px; }
+  .cartao dl { margin: 0 0 10px; display: grid; grid-template-columns: 170px 1fr; gap: 3px 12px; }
+  .cartao dt { color: var(--suave); }
+  .cartao dd { margin: 0; font-weight: 600; }
+  .cartao p { margin: 0; }
+  footer { padding: 14px 22px; background: var(--card); border-top: 1px solid var(--linha); display: flex; gap: 10px; align-items: center; }
+  footer label { color: var(--suave); font-size: 13px; }
+  footer input { flex: 1; height: 38px; border: 1px solid var(--linha); border-radius: 8px; padding: 0 12px; font: inherit; }
+  footer button { height: 38px; padding: 0 18px; border: 0; border-radius: 8px; background: var(--marca); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+  footer button:disabled { opacity: .45; cursor: default; }
+  @media (max-width: 760px) { aside { display: none; } .cartao { min-width: 0; } .cartao dl { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<aside>
+  <h1><i>C</i> Chat da equipe</h1>
+  <small>Canais</small>
+  <div># geral</div>
+  <div class="ativo"># validação-semanal</div>
+  <div># dúvidas</div>
+</aside>
+<main>
+  <header><strong># validação-semanal</strong><span>Demonstração · mensagens fictícias</span></header>
+  <section id="conversa" aria-live="polite"><div class="vazio">Nenhuma mensagem ainda.</div></section>
+  <footer>
+    <label for="texto">Você é o gestor</label>
+    <input id="texto" placeholder="Escreva uma mensagem" autocomplete="off">
+    <button id="enviar" disabled>Enviar</button>
+  </footer>
+</main>
+<script>
+(function () {
+  var hora = new URLSearchParams(location.search).get("hora") || "10:22";
+  var $ = function (id) { return document.getElementById(id); };
+  var vistas = 0;
+
+  function esc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function desenhar(msgs) {
+    if (msgs.length === vistas) return;
+    vistas = msgs.length;
+    var html = msgs.map(function (m) {
+      var ini = m.papel === "robo" ? "R" : "G";
+      var corpo;
+      if (m.tipo === "card") {
+        corpo = '<div class="cartao"><h3>' + esc(m.titulo) + "</h3><dl>" +
+          (m.fatos || []).map(function (f) { return "<dt>" + esc(f[0]) + "</dt><dd>" + esc(f[1]) + "</dd>"; }).join("") +
+          "</dl><p>" + esc(m.texto) + "</p></div>";
+      } else {
+        corpo = '<div class="balao">' + esc(m.texto) + "</div>";
+      }
+      return '<div class="msg"><div class="avatar ' + m.papel + '">' + ini + "</div><div><div class=\"meta\"><b>" +
+        esc(m.autor) + "</b>" + esc(m.hora) + "</div>" + corpo + "</div></div>";
+    }).join("");
+    $("conversa").innerHTML = html || '<div class="vazio">Nenhuma mensagem ainda.</div>';
+    $("conversa").scrollTop = $("conversa").scrollHeight;
+  }
+
+  function atualizar() {
+    fetch("/api/chat").then(function (r) { return r.json(); }).then(desenhar).catch(function () {});
+  }
+
+  $("texto").addEventListener("input", function () { $("enviar").disabled = !$("texto").value.trim(); });
+  $("enviar").addEventListener("click", function () {
+    var texto = $("texto").value.trim();
+    if (!texto) return;
+    $("enviar").disabled = true;
+    fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ autor: "Gestor", papel: "gestor", tipo: "texto", texto: texto, hora: hora }) })
+      .then(function () { $("texto").value = ""; atualizar(); });
+  });
+  $("texto").addEventListener("keydown", function (e) { if (e.key === "Enter") $("enviar").click(); });
+  atualizar();
+  setInterval(atualizar, 700);
+})();
+</script>
+</body>
+</html>
